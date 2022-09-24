@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @default(autoincrement()) @id
+  email     String   @unique
+  name      String?
+  password  String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  url       String   @unique
+  userRole  UserRole @default(USER)
+  posts     Post[]  @relation("PostToUser")
+  votes     Vote[]
+  likes     Like[]
+  comments  Comment[] @relation("CommentToUser")
+  uploads   Upload[] @relation("UploadToUser")
+  profile   Profile?
+  followers Follower[] @relation("WedToWer")
+  following Follower[] @relation("WerToWed")
+  postsLiked Post[] @relation("PostToUserLiked")
+  commentsLiked Comment[] @relation("CommentToUserLiked")
+  uploadsLiked Upload[] @relation("UploadToUserLiked")
+  tags      Tag[]
+  reports    Report[]
+  deleted  Boolean  @default(false)
+  verified   Boolean @default(false)
+}
+
+model Post {
+  id        Int      @default(autoincrement()) @id
+  title     String
+  body      String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  url       String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  votes     Vote[]
+  likes     Like[]
+  comments  Comment[]
+  uploads   Upload[]
+  tags      Tag[]
+  reports    Report[]
+}
+
+model Comment {
+  id        Int      @default(autoincrement()) @id
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  comme
+  likes     Like[]
+  uploads   Upload[]
+  reports    Report[]
+}
+
+model Vote {
+  id        Int      @default(autoincrement()) @id
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  commentId Int?
+  tags      Tag[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+}
+
+model Like {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId    Int?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  commentId Int?
+  upload    Upload?  @relation(fields: [uploadId], references: [id])
+  uploadId  Int?
+}
+
+model Tag {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  name      String
+  posts     Post[]
+  votes     Vote[]
+  reports    Report[]
+}
+
+model Follower {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  user      User    @relation("lol")
+  userId    Int
+  follower  User @relation("ITISFUCK")
+  followerId Int
+}
+
+model Report {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId    Int?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  commentId Int?
+  upload    Upload?  @relation(fields: [uploadId], references: [id])
+  uploadId  Int?
+  tags      Tag[]
+  reports    Report[]
+}
+
+model Profile {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  bio       String?
+  image     String?
+  location  String?
+  website   String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  userImage UserImage[]
+}
+
+model UserImage {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  image     String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model Upload {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  url       String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId    Int?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  commentId Int?
+  likes     Like[]
+  tags      Tag[]
+  reports    Report[]
+  type      UploadType
+}
+
+model uploadType {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted  Boolean  @default(false)
+  type      UploadType
+  uploads   Upload[]
+}
+
+enum UploadType {
+  IMAGE
+  VIDEO
+  AUDIO
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}

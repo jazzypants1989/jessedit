@@ -25,7 +25,7 @@ model Post {
   body  String
   user  User   @relation(fields: [userId], references: [id])
   userId String
-  comments Comment[]
+  comments Comment[] 
   votes PostVote[]
 }
 
@@ -65,3 +65,4 @@ model CommentVote {
 
   @@id([userId, commentId])
 }
+

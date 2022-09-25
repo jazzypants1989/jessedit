@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import { PostList } from "./components/PostLists";
 import { Post } from "./components/Post";
+import { PostList } from "./components/PostLists";
 import { PostProvider } from "./contexts/PostContext";
 
 function App() {
@@ -20,4 +20,5 @@ function App() {
     </div>
   );
 }
+
 export default App;
